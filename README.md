@@ -137,7 +137,7 @@ python -m coverage report
 PRIVPY_HYPOTHESIS_PROFILE=ci PYTHONPATH=src python -m unittest discover -s tests -t . -q
 ```
 
-Hypothesis provides generated data, shrinking, a persistent regression database, generated programs and a state machine for lifetime/ownership sequences.
+Hypothesis provides generated data, shrinking, a persistent regression database, generated programs and state machines for region lifetimes and branching ledger histories. Composed workloads cover transfers, joined reports and cyclic graphs, alongside concurrency, cancellation and failure recovery.
 
 Profiles: `dev` uses up to 200 examples per property, `ci` up to 1,000 with deterministic generation, and `stress` up to 10,000. Finite input spaces may be exhausted earlier. Failures include minimized examples and reproduction instructions. `PRIVPY_TEST_STATE` selects the local database directory.
 

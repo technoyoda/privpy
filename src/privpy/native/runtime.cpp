@@ -687,7 +687,11 @@ V VM::eval(const V& node,Env& env,int depth) {
         if(op=="Not") return V(!truth(x));
         if(!numeric(x)) fail("TypeError");
         if(op=="UAdd") return x.is<bool>()?V(as_int(x)):x;
-        if(op=="USub") return binary("Sub",V(int64_t(0)),x);
+        if(op=="USub") {
+            // Subtracting from +0.0 loses the negative sign when x is +0.0.
+            if(x.is<double>()) return V(-as_double(x));
+            return binary("Sub",V(int64_t(0)),x);
+        }
         fail("InvalidProgram");
     }
     if(kind=="bool") {

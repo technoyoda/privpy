@@ -1,4 +1,5 @@
 """Minimized failures remain in source control independently of Hypothesis's database."""
+import struct
 import unittest
 
 from tests import fixtures as f
@@ -7,6 +8,11 @@ from tests.helpers import make_function, run
 
 
 class DiscoveredRegressions(unittest.TestCase):
+    def test_float_negation_preserves_signed_zero(self):
+        negate = make_function("return -value")
+        for value in (0.0, -0.0):
+            self.assertEqual(struct.pack(">d", run(negate, value)), struct.pack(">d", -value))
+
     def test_smallest_subnormal_float(self):
         self.assertEqual(run(f.identity, 5e-324), 5e-324)
 
