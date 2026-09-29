@@ -4,6 +4,26 @@
 
 Experimental same-process Python module. The runtime is C++17; the entire test suite is Python, using `unittest` and Hypothesis.
 
+## Install from PyPI
+
+Install the latest release into your Python environment:
+
+```sh
+python -m pip install privpy
+```
+
+To upgrade an existing installation:
+
+```sh
+python -m pip install --upgrade privpy
+```
+
+Prebuilt wheels include the native runtime for CPython 3.9–3.14 on macOS 14+ and glibc 2.28+ Linux, on Intel and ARM. These wheels do not require a local C++ compiler. If pip selects a source archive instead, the source-build requirements below apply. Windows and PyPy are not supported yet.
+
+## Example
+
+Save protected functions in a Python file so their source can be inspected.
+
 ```python
 from pathlib import Path
 from privpy import PrivateRegion, private_function
