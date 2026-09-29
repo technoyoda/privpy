@@ -54,14 +54,13 @@ jobs:
           path: dist
       - name: Unpack the tested source archive
         run: |
-          mkdir wheel-source
-          tar -xzf dist/*.tar.gz --strip-components=1 -C wheel-source
+          # cibuildwheel resolves test-sources from the working directory.
+          tar -xzf dist/*.tar.gz --strip-components=1
       - name: Build and test CPython 3.9–3.14 wheels
         uses: pypa/cibuildwheel@v4.2.1
         env:
           CIBW_ARCHS: native
         with:
-          package-dir: wheel-source
           output-dir: wheelhouse
       - uses: actions/upload-artifact@v4
         with:
