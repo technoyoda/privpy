@@ -156,4 +156,4 @@ See [TESTING.md](TESTING.md) for extending the suite.
 
 GitHub Actions runs tests, native sanitizer checks, source builds, and wheels for CPython 3.9–3.14 on Linux and macOS, each on Intel and ARM. Published GitHub releases trigger verified PyPI uploads through Trusted Publishing.
 
-See [RELEASING.md](RELEASING.md) for the exact PyPI publisher fields and release steps, and [VALIDATION.md](VALIDATION.md) for local verification results.
+See [CHANGELOG.md](CHANGELOG.md) for release notes, [RELEASING.md](RELEASING.md) for the exact PyPI publisher fields and release steps, and [VALIDATION.md](VALIDATION.md) for local verification results.
