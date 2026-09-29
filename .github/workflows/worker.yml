@@ -2,7 +2,7 @@ name: Worker prototype
 
 on:
   push:
-    branches: [main, worker-process-isolation]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 

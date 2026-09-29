@@ -190,6 +190,6 @@ The useful design direction is to keep a region open for a workload and compose 
 
 ## Remote branch checks
 
-`.github/workflows/worker.yml` runs on this branch, on pull requests, and on `main`. It covers Linux x86-64/ARM64 and macOS Intel/ARM64, with additional Python 3.9 and 3.14 jobs. Each job builds both backends, checks coverage, routes the full API contract through workers, runs OS inspection probes, and runs the worker contracts under UBSan with captured diagnostics. Python 3.12 jobs also attach benchmark reports.
+`.github/workflows/worker.yml` runs on pull requests and on `main`, and can be started manually on a branch. It covers Linux x86-64/ARM64 and macOS Intel/ARM64, with additional Python 3.9 and 3.14 jobs. Each job builds both backends, checks coverage, routes the full API contract through workers, runs OS inspection probes, and runs the worker contracts under UBSan with captured diagnostics. Python 3.12 jobs also attach benchmark reports. Test dependencies use separate compatible pins for Python 3.9.
 
 Linux inspection checks require working controls. macOS controls can be denied by the runner's broader permissions, so an inconclusive result emits a visible workflow warning and remains explicitly inconclusive in the attached JSON. Exposure or probe errors fail on either platform. A green macOS job alone is therefore not proof of inspection resistance. Artifacts retain coverage, inspection outcomes, benchmark statistics and sanitizer diagnostics. No workflow here publishes a package or merges the branch.
