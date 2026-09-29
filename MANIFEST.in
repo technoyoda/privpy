@@ -1,0 +1,5 @@
+include README.md DESIGN.md TESTING.md VALIDATION.md RELEASING.md requirements-test.txt
+recursive-include src/privpy/native *.cpp
+recursive-include tests *.py
+recursive-include examples *.py *.json
+recursive-include scripts *.py

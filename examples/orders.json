@@ -1,0 +1,6 @@
+[
+  {"country": "US", "amount": 1200, "status": "paid"},
+  {"country": "GB", "amount": 700, "status": "paid"},
+  {"country": "US", "amount": 300, "status": "paid"},
+  {"country": "GB", "amount": 900, "status": "pending"}
+]
