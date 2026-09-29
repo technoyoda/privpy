@@ -30,7 +30,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       PYTHONPATH: src
-      PRIVPY_TEST_STATE: ${{ runner.temp }}/hypothesis-worker
+      PRIVPY_TEST_STATE: .hypothesis/worker
     steps:
       - uses: actions/checkout@v6
         with:
