@@ -88,6 +88,7 @@ from privpy.intrinsics import (
 
 Prototype semantics:
 
+- CSV uses minimal quoting with comma separators and CRLF record endings. NUL characters are preserved and do not by themselves force quoting.
 - Collection updates use value semantics; updating one binding does not mutate another reference.
 - Dictionaries iterate in sorted key order, and their view methods return lists.
 - Integers are bounded. Overflow raises a sanitized execution error.

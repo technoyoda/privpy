@@ -1,5 +1,3 @@
-import csv
-import io
 import json
 import math
 from pathlib import Path
@@ -10,6 +8,7 @@ from hypothesis import given, strategies as st
 
 from privpy import PrivateRegion, PrivateAccessError, PrivateExecutionError, RegionClosedError
 from tests import fixtures as f
+from tests.csv_oracle import csv_bytes as expected_csv_bytes
 from tests.helpers import make_function, run
 from tests.strategies import expressions, json_values, rows, small_int, text, values
 
@@ -231,11 +230,8 @@ class IOProperties(unittest.TestCase):
                                      st.floats(allow_nan=False, allow_infinity=False)), max_size=3), max_size=10))
     def test_csv_cells_match_standard_library(self, columns, row_values):
         rows = [dict(zip(columns, items)) for items in row_values]
-        expected = io.StringIO(newline="")
-        writer = csv.writer(expected)
-        writer.writerow(columns)
-        writer.writerows([row.get(column) for column in columns] for row in rows)
-        self.assertEqual(run(f.any_csv, rows, columns), expected.getvalue().encode("utf-8"))
+        cells = [columns] + [[row.get(column) for column in columns] for row in rows]
+        self.assertEqual(run(f.any_csv, rows, columns), expected_csv_bytes(cells))
 
     @given(values)
     def test_transform_matches_separate_private_call(self, value):
@@ -277,11 +273,8 @@ class IOProperties(unittest.TestCase):
 
     @given(st.lists(st.fixed_dictionaries({"country": text, "amount": small_int}), max_size=30))
     def test_csv_encoder_matches_standard_library(self, rows):
-        expected = io.StringIO(newline="")
-        writer = csv.writer(expected)
-        writer.writerow(["country", "amount"])
-        writer.writerows([row["country"], row["amount"]] for row in rows)
-        self.assertEqual(run(f.as_csv, rows), expected.getvalue().encode("utf-8"))
+        cells = [["country", "amount"]] + [[row["country"], row["amount"]] for row in rows]
+        self.assertEqual(run(f.as_csv, rows), expected_csv_bytes(cells))
 
     @given(st.binary(max_size=2048), st.binary(max_size=2048))
     def test_existing_files_never_overwritten(self, original, replacement):

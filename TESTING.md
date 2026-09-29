@@ -21,6 +21,7 @@ All test code is Python. The suite uses `unittest` and real Hypothesis property-
 - Generated expression trees agree with an independent Python oracle.
 - Unicode indexing, length and encoding agree with Python.
 - CSV encoding agrees with `csv.writer` for documented input types.
+- The CSV oracle uses an escape character absent from the generated input to avoid older CPython's incidental NUL quoting. NUL values remain covered, including deterministic regressions.
 - JSON reading and encoding agree with Python for the strict supported subset.
 - Inline transforms equal separate protected transformation followed by export.
 - File export writes exact bytes; paths never infer formats.
