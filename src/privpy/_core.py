@@ -115,11 +115,14 @@ class PrivateRegion:
         self._token = None
         self._finalizer = None
 
+    def _make_native(self):
+        return native()
+
     def __enter__(self):
         with self._lock:
             if self._entered or self._closed:
                 raise RegionClosedError("A region may be entered only once")
-            self._native = native()
+            self._native = self._make_native()
             self._id = self._native.create(self._max_steps)
             self._entered = True
             self._finalizer = weakref.finalize(self, self._native.close, self._id)

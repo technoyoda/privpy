@@ -1,0 +1,87 @@
+name: Worker prototype
+
+on:
+  push:
+    branches: [main, worker-process-isolation]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: worker-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  worker:
+    name: Worker / ${{ matrix.os }} / Python ${{ matrix.python }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-15-intel, macos-14]
+        python: ["3.12"]
+        include:
+          - os: ubuntu-24.04
+            python: "3.9"
+          - os: macos-14
+            python: "3.14"
+    runs-on: ${{ matrix.os }}
+    env:
+      PYTHONPATH: src
+      PRIVPY_TEST_STATE: ${{ runner.temp }}/hypothesis-worker
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: requirements-test.txt
+      - run: python -m pip install -r requirements-test.txt
+      - name: Build both native backends
+        run: |
+          python -m privpy.build
+          python -m privpy.build --worker
+          mkdir -p test-results
+      - name: Test default API and worker transport with coverage
+        run: |
+          python -m coverage run -m unittest discover -s tests -t . -q
+          python -m coverage report
+          python -m coverage xml -o test-results/worker-coverage.xml
+      - name: Run the full API contract through workers
+        run: python scripts/check_worker.py --examples 50
+      - name: Probe actual OS inspection routes with unprotected controls
+        shell: bash
+        run: |
+          set +e
+          python scripts/probe_worker_memory.py --json test-results/inspection.json
+          result=$?
+          set -e
+          if [ "$result" -eq 2 ]; then
+            echo '::warning::Inspection evidence is inconclusive because the control was inaccessible. See inspection.json.'
+            if [ "$RUNNER_OS" = Linux ]; then
+              echo 'Linux requires a working positive control for these inspection checks.'
+              exit 1
+            fi
+          elif [ "$result" -ne 0 ]; then
+            exit "$result"
+          fi
+      - name: Record advisory performance measurements
+        if: matrix.python == '3.12'
+        run: python scripts/benchmark_worker.py --samples 5 --json test-results/benchmark.json
+      - name: Build worker with UndefinedBehaviorSanitizer
+        run: python -m privpy.build --worker --sanitize --output "$RUNNER_TEMP/worker-sanitized"
+      - name: Run worker contracts with sanitizer diagnostics captured
+        env:
+          PRIVPY_WORKER: ${{ runner.temp }}/worker-sanitized
+        run: python scripts/check_worker.py --examples 25 --sanitizer-log test-results/worker-sanitizer.log
+      - name: Save coverage, inspection, performance, and sanitizer evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: worker-${{ matrix.os }}-${{ matrix.python }}
+          path: test-results/
+          if-no-files-found: warn
