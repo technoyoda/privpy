@@ -59,6 +59,8 @@ There is no `policy`, `region.run`, universal `load`, `format`, or destination a
 
 ## Build and run
 
+For the local subprocess experiment and its runnable walkthrough, see [WORKER_STUDY.md](WORKER_STUDY.md). It uses an optional import and does not change the default backend.
+
 Requires Python 3.9+ and macOS or Linux. Building from source needs a C++17 compiler with floating-point `std::to_chars` support. Release wheels target macOS 14+ and glibc 2.28+ Linux. The pinned development environment uses Python 3.12.
 
 ```sh

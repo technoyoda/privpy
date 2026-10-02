@@ -9,6 +9,18 @@ from .errors import ExportError, PrivateExecutionError, RegionClosedError, Resou
 from ._wire import decode
 
 
+def raise_native_error(code):
+    if code == "ClosedRegion":
+        raise RegionClosedError("The region is closed")
+    if code == "ResourceLimit":
+        raise ResourceLimitError("Private computation exceeded a resource limit")
+    if code == "FileExists":
+        raise FileExistsError("Export destination already exists")
+    if code in {"ExportTypeError", "InvalidDestination", "OutputError"}:
+        raise ExportError("Export failed: " + code)
+    raise PrivateExecutionError("Private computation failed: " + code)
+
+
 class Native:
     def __init__(self):
         name = "_runtime.dylib" if sys.platform == "darwin" else "_runtime.so"
@@ -35,15 +47,7 @@ class Native:
         if result:
             return result
         code = self.lib.pr_last_error().decode("ascii")
-        if code == "ClosedRegion":
-            raise RegionClosedError("The region is closed")
-        if code == "ResourceLimit":
-            raise ResourceLimitError("Private computation exceeded a resource limit")
-        if code == "FileExists":
-            raise FileExistsError("Export destination already exists")
-        if code in {"ExportTypeError", "InvalidDestination", "OutputError"}:
-            raise ExportError("Export failed: " + code)
-        raise PrivateExecutionError("Private computation failed: " + code)
+        raise_native_error(code)
 
     def create(self, max_steps):
         return self.check(self.lib.pr_create(max_steps))

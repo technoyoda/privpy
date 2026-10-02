@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 *.so
 *.dylib
+_worker_runtime
 *.egg-info/
 build/
 dist/
